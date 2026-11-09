@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   // Permitir payloads PDF/imagen en base64 de hasta 20MB + Webhooks de Kommo CRM (x-www-form-urlencoded)
   app.use(express.json({ limit: '20mb' }));
