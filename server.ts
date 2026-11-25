@@ -1,6 +1,7 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
@@ -881,7 +882,10 @@ ${JSON.stringify(erpSnapshot || {}, null, 2)}`;
     res.json({ status: 'ok' });
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  const distPath = path.join(__dirname, 'dist');
+  const distExists = fs.existsSync(distPath);
+
+  if (process.env.NODE_ENV !== 'production' || !distExists) {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
@@ -893,7 +897,6 @@ ${JSON.stringify(erpSnapshot || {}, null, 2)}`;
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
